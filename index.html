@@ -3,794 +3,316 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>INFINITE HEROES — ADMIN</title>
-<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<title>HERO ADMIN CONTROL</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-:root{--gold:#FFD700;--red:#E63946;--green:#22c55e;--blue:#3b82f6;--bg:#0a0a0f;--sidebar:#0f0f1a;--card:#12121e;--border:#2a2a3e;--text:#e0e0e0;--dim:#888}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-#gate{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center}
-.gate-box{background:var(--card);border:3px solid var(--gold);box-shadow:6px 6px 0 var(--red);padding:40px 36px;width:340px;text-align:center}
-.gate-box h1{font-family:'Bangers';font-size:32px;color:var(--gold);letter-spacing:2px;margin-bottom:6px}
-.gate-box p.sub{font-size:11px;color:var(--dim);margin-bottom:20px}
-.gate-box input{width:100%;padding:10px 14px;background:var(--bg);border:2px solid var(--border);color:var(--text);font-size:14px;font-weight:700;margin-bottom:10px;outline:none;letter-spacing:4px}
-.gate-box input:focus{border-color:var(--gold)}
-#gate-error{color:var(--red);font-size:12px;font-weight:700;min-height:18px;margin-bottom:10px}
-.btn-enter{width:100%;padding:12px;background:var(--gold);color:#000;border:2px solid #000;box-shadow:3px 3px 0 #000;font-family:'Bangers';font-size:20px;letter-spacing:2px;cursor:pointer}
-.btn-enter:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 #000}
-#app{display:none;min-height:100vh}
-.sidebar{position:fixed;top:0;left:0;width:220px;height:100vh;background:var(--sidebar);border-right:2px solid var(--border);display:flex;flex-direction:column;z-index:100;overflow-y:auto}
-.sidebar-logo{padding:20px;border-bottom:2px solid var(--border)}
-.sidebar-logo h1{font-family:'Bangers';font-size:20px;color:var(--gold);letter-spacing:2px;line-height:1.2}
-.sidebar-logo p{font-size:10px;color:var(--dim);font-weight:700;margin-top:2px}
-.nav-link{display:flex;align-items:center;gap:10px;padding:12px 20px;color:var(--dim);font-size:13px;font-weight:700;cursor:pointer;border-left:3px solid transparent;transition:all .15s}
-.nav-link:hover{color:var(--text);background:rgba(255,255,255,.03)}
-.nav-link.active{color:var(--gold);border-left-color:var(--gold);background:rgba(255,215,0,.06)}
-.sidebar-footer{margin-top:auto;padding:16px;border-top:2px solid var(--border)}
-.btn-logout{width:100%;padding:8px;background:transparent;border:2px solid var(--red);color:var(--red);font-weight:700;font-size:12px;cursor:pointer}
-.btn-logout:hover{background:var(--red);color:#fff}
-.main{margin-left:220px;padding:28px;min-height:100vh}
-.page{display:none}
-.page.active{display:block}
-.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
-.page-header h2{font-family:'Bangers';font-size:28px;color:var(--gold);letter-spacing:2px}
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:28px}
-.stat-card{background:var(--card);border:2px solid var(--border);box-shadow:3px 3px 0 var(--gold);padding:18px}
-.stat-card .lbl{font-size:10px;font-weight:900;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
-.stat-card .val{font-family:'Bangers';font-size:36px;color:var(--gold);line-height:1;margin-top:4px}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{background:var(--sidebar);color:var(--gold);font-family:'Bangers';letter-spacing:1px;padding:10px 14px;text-align:left;border-bottom:2px solid var(--border);white-space:nowrap}
-td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
-tr:hover td{background:rgba(255,255,255,.02)}
-tr.pending-row td:first-child{border-left:3px solid var(--gold)}
-.badge{font-size:10px;font-weight:900;text-transform:uppercase;padding:3px 8px;border-radius:2px;letter-spacing:1px;display:inline-block;white-space:nowrap}
-.b-pending{background:rgba(255,215,0,.15);color:var(--gold);border:1px solid var(--gold)}
-.b-approved{background:rgba(34,197,94,.15);color:var(--green);border:1px solid var(--green)}
-.b-rejected{background:rgba(230,57,70,.15);color:var(--red);border:1px solid var(--red)}
-.b-active{background:rgba(34,197,94,.15);color:var(--green);border:1px solid var(--green)}
-.b-inactive{background:rgba(136,136,136,.15);color:#888;border:1px solid #888}
-.b-banned{background:rgba(230,57,70,.15);color:var(--red);border:1px solid var(--red)}
-.b-info{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid var(--blue)}
-.b-event{background:rgba(255,215,0,.15);color:var(--gold);border:1px solid var(--gold)}
-.b-alert{background:rgba(230,57,70,.15);color:var(--red);border:1px solid var(--red)}
-.btn{padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;border:2px solid;letter-spacing:.5px;white-space:nowrap;font-family:'Inter'}
-.btn:hover{filter:brightness(1.2)}
-.btn-gold{background:var(--gold);color:#000;border-color:#000}
-.btn-red{background:rgba(230,57,70,.12);color:var(--red);border-color:var(--red)}
-.btn-green{background:rgba(34,197,94,.12);color:var(--green);border-color:var(--green)}
-.btn-blue{background:rgba(59,130,246,.12);color:var(--blue);border-color:var(--blue)}
-.btn-gray{background:rgba(136,136,136,.12);color:#888;border-color:#888}
-.filter-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-.filter-tab{padding:5px 14px;font-size:11px;font-weight:700;cursor:pointer;border:2px solid var(--border);color:var(--dim);background:transparent;letter-spacing:1px}
-.filter-tab.active{border-color:var(--gold);color:var(--gold);background:rgba(255,215,0,.06)}
-.form-group{margin-bottom:14px}
-.form-group label{display:block;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:var(--dim);margin-bottom:5px}
-.form-group input,.form-group select,.form-group textarea{width:100%;padding:9px 12px;background:var(--bg);border:2px solid var(--border);color:var(--text);font-size:13px;font-weight:600;outline:none;resize:vertical;font-family:'Inter'}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--gold)}
-.form-group select option{background:var(--bg)}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:5000;align-items:center;justify-content:center;padding:16px}
-.modal-overlay.open{display:flex}
-.modal-box{background:var(--card);border:2px solid var(--gold);box-shadow:6px 6px 0 var(--red);width:100%;max-width:480px;max-height:90vh;overflow-y:auto}
-.modal-header{padding:16px 20px;border-bottom:2px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-.modal-header h3{font-family:'Bangers';font-size:22px;color:var(--gold);letter-spacing:2px}
-.modal-close{background:none;border:none;color:var(--dim);font-size:22px;cursor:pointer;line-height:1}
-.modal-close:hover{color:var(--red)}
-.modal-body{padding:20px}
-.modal-footer{padding:14px 20px;border-top:2px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
-.card-box{background:var(--card);border:2px solid var(--border);padding:20px;margin-bottom:24px}
-.chart-wrap{background:var(--card);border:2px solid var(--border);padding:20px;margin-bottom:28px}
-.chart-wrap h3{font-family:'Bangers';font-size:18px;color:var(--gold);letter-spacing:2px;margin-bottom:16px}
-.search-row{display:flex;gap:10px;margin-bottom:16px}
-.search-row input{flex:1;padding:9px 12px;background:var(--bg);border:2px solid var(--border);color:var(--text);font-size:13px;font-weight:600;outline:none;font-family:'Inter'}
-.search-row input:focus{border-color:var(--gold)}
-.announce-card{background:var(--bg);border:1px solid var(--border);border-left:3px solid var(--gold);padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-#toast{position:fixed;bottom:24px;right:24px;z-index:99999;padding:12px 20px;background:var(--gold);color:#000;border:2px solid #000;box-shadow:4px 4px 0 #000;font-family:'Bangers';font-size:16px;letter-spacing:1px;display:none;max-width:300px;word-break:break-word}
-.empty-msg{padding:32px;text-align:center;color:var(--dim);font-weight:700;font-size:13px}
-.loader-ring{border:3px solid var(--border);border-top:3px solid var(--gold);border-radius:50%;width:28px;height:28px;animation:spin 1s linear infinite;margin:32px auto}
-@keyframes spin{to{transform:rotate(360deg)}}
-.td-actions{display:flex;gap:6px;flex-wrap:wrap}
-.realtime-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:6px;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+:root { --gold:#FFDE03; --red:#E63946; --blue:#1E90FF; --green:#22c55e; --bg:#f3f4f6; --card:#fff; --ink:#000; }
+* { box-sizing:border-box; margin:0; padding:0; font-family:'Inter', sans-serif; }
+body { background: var(--bg); color: var(--ink); padding-bottom: 60px; }
+.bf { font-family:'Bangers', cursive; letter-spacing:1px; }
+header { background: var(--ink); color:#fff; padding:16px; display:flex; justify-content:space-between; align-items:center; }
+.cc { background:var(--card); border:3px solid var(--ink); box-shadow:4px 4px 0 var(--ink); padding:16px; margin:16px; }
+.tabs { display:flex; background:var(--card); border-bottom:3px solid var(--ink); overflow-x:auto; }
+.tab-b { flex:1; text-align:center; padding:12px; font-weight:900; font-size:12px; cursor:pointer; border-right:1px solid #eee; white-space:nowrap; }
+.tab-b.on { background:var(--gold); }
+.panel { display:none; padding:12px; }
+.panel.on { display:block; }
+.cb { border:3px solid var(--ink); box-shadow:3px 3px 0 var(--ink); font-weight:900; padding:10px 16px; cursor:pointer; text-transform:uppercase; background:var(--gold); }
+.cb:active { transform:translate(2px,2px); box-shadow:1px 1px 0 var(--ink); }
+input, select, textarea { width:100%; padding:10px; border:2px solid var(--ink); font-weight:700; margin-bottom:12px; outline:none; }
+label { font-size:11px; font-weight:900; text-transform:uppercase; display:block; margin-bottom:4px; color:#444; }
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.card-item { background:#fff; border:2px solid var(--ink); padding:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; }
+.bpend { background:#f97316; color:#fff; font-size:10px; font-weight:900; padding:2px 6px; border:2px solid var(--ink); }
+.bapp { background:var(--green); color:#fff; font-size:10px; font-weight:900; padding:2px 6px; border:2px solid var(--ink); }
+.brej { background:var(--red); color:#fff; font-size:10px; font-weight:900; padding:2px 6px; border:2px solid var(--ink); }
+#toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; padding:10px 20px; font-weight:900; display:none; z-index:9999; border:2px solid #fff; }
+.rt-dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--green); margin-right:6px; animation:rtp 2s infinite; }
+@keyframes rtp { 0%,100% { opacity:1 } 50% { opacity:.2 } }
 </style>
 </head>
 <body>
-
-<div id="gate">
-  <div class="gate-box">
-    <h1>⚡ ADMIN GATE</h1>
-    <p class="sub">INFINITE HEROES CONTROL PANEL</p>
-    <input type="password" id="gate-input" placeholder="Password">
-    <p id="gate-error"></p>
-    <button class="btn-enter" id="gate-btn">ENTER COMMAND CENTER</button>
-  </div>
-</div>
-
 <div id="toast"></div>
 
-<div id="app">
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <h1>⚡ INFINITE<br>HEROES</h1>
-      <p><span class="realtime-dot"></span>LIVE ADMIN PANEL</p>
-    </div>
-    <nav style="flex:1;padding:8px 0">
-      <div class="nav-link active" id="nav-dashboard" onclick="showPage('dashboard')">📊 Dashboard</div>
-      <div class="nav-link" id="nav-tasks" onclick="showPage('tasks')">⚡ Manage Tasks</div>
-      <div class="nav-link" id="nav-users" onclick="showPage('users')">👥 Users</div>
-      <div class="nav-link" id="nav-payments" onclick="showPage('payments')">💰 Payments</div>
-      <div class="nav-link" id="nav-announce" onclick="showPage('announce')">📢 Announcements</div>
-    </nav>
-    <div class="sidebar-footer">
-      <button class="btn-logout" onclick="doLogout()">🔒 LOGOUT</button>
-    </div>
-  </aside>
+<header>
+  <h1 class="bf" style="font-size:24px;">⚙️ HERO PANEL</h1>
+  <div style="font-size:11px; font-weight:900;"><span class="rt-dot"></span>LIVE SYNC</div>
+</header>
 
-  <main class="main">
-    <div id="page-dashboard" class="page active">
-      <div class="page-header"><h2>📊 LIVE DASHBOARD</h2></div>
-      <div class="stat-grid">
-        <div class="stat-card"><div class="lbl">Total Users</div><div class="val" id="s-users">—</div></div>
-        <div class="stat-card"><div class="lbl">Active Tasks</div><div class="val" id="s-tasks">—</div></div>
-        <div class="stat-card"><div class="lbl">Pending Payouts</div><div class="val" id="s-pending">—</div></div>
-        <div class="stat-card"><div class="lbl">Total Coins</div><div class="val" id="s-coins">—</div></div>
-      </div>
-      <div class="chart-wrap">
-        <h3>📈 TASK COMPLETIONS — 12 MONTHS</h3>
-        <canvas id="mychart"></canvas>
-      </div>
-    </div>
-
-    <div id="page-tasks" class="page">
-      <div class="page-header">
-        <h2>⚡ TASKS <span style="font-size:14px;color:var(--dim)" id="tasks-count"></span></h2>
-        <button class="btn btn-gold" onclick="openTaskModal(null)">＋ ADD TASK</button>
-      </div>
-      <div class="card-box">
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>#</th><th>Name</th><th>Type</th><th>Coins</th><th>Link</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody id="tbody-tasks"><tr><td colspan="7"><div class="loader-ring"></div></td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div id="page-users" class="page">
-      <div class="page-header"><h2>👥 USERS <span style="font-size:14px;color:var(--dim)" id="users-count"></span></h2></div>
-      <div class="card-box">
-        <div class="search-row">
-          <input type="text" id="user-search" placeholder="Search by name or Telegram ID..." oninput="filterUsers()">
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>#</th><th>Name</th><th>Telegram ID</th><th>Coins</th><th>Tasks</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody id="tbody-users"><tr><td colspan="8"><div class="loader-ring"></div></td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div id="page-payments" class="page">
-      <div class="page-header"><h2>💰 PAYMENTS</h2></div>
-      <div class="filter-tabs">
-        <button class="filter-tab active" onclick="setPayFilter('all',this)">ALL</button>
-        <button class="filter-tab" onclick="setPayFilter('pending',this)">PENDING</button>
-        <button class="filter-tab" onclick="setPayFilter('approved',this)">APPROVED</button>
-        <button class="filter-tab" onclick="setPayFilter('rejected',this)">REJECTED</button>
-      </div>
-      <div class="card-box">
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>#</th><th>User</th><th>Coins</th><th>Wallet</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody id="tbody-payments"><tr><td colspan="7"><div class="loader-ring"></div></td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div id="page-announce" class="page">
-      <div class="page-header">
-        <h2>📢 ANNOUNCEMENTS</h2>
-        <button class="btn btn-gold" onclick="openAnnModal(null)">＋ POST UPDATE</button>
-      </div>
-      <div id="ann-list"><div class="loader-ring"></div></div>
-    </div>
-  </main>
+<div class="tabs">
+  <div class="tab-b on" id="b-dash" onclick="go('dash')">📊 DASH</div>
+  <div class="tab-b" id="b-tasks" onclick="go('tasks')">⚡ TASKS</div>
+  <div class="tab-b" id="b-pays" onclick="go('pays')">💰 PAYOUTS</div>
+  <div class="tab-b" id="b-users" onclick="go('users')">👥 USERS</div>
 </div>
 
-<!-- TASK MODAL -->
-<div class="modal-overlay" id="m-task">
-  <div class="modal-box">
-    <div class="modal-header">
-      <h3 id="m-task-title">ADD TASK</h3>
-      <button class="modal-close" onclick="closeModal('m-task')">✕</button>
+<div id="p-dash" class="panel on">
+  <div class="grid-2" style="margin-bottom:10px;">
+    <div class="cc" style="margin:0; background:#fef9c3;">
+      <label>Total Registered Users</label>
+      <div id="d-u" class="bf" style="font-size:32px;">0</div>
     </div>
-    <div class="modal-body">
-      <input type="hidden" id="t-id">
-      <div class="form-group"><label>Task Name *</label><input type="text" id="t-name" placeholder="Subscribe YouTube Channel"></div>
-      <div class="form-group"><label>Type</label>
-        <select id="t-type">
-          <option>YouTube</option><option>Telegram</option><option>Twitter</option>
-          <option>Instagram</option><option>Survey</option><option>Custom</option>
-        </select>
-      </div>
-      <div class="form-group"><label>Link (URL)</label><input type="url" id="t-link" placeholder="https://..."></div>
-      <div class="form-group"><label>Reward (Coins) *</label><input type="number" id="t-reward" placeholder="50" min="1"></div>
-      <div class="form-group"><label>Status</label>
-        <select id="t-status"><option value="true">Active</option><option value="false">Inactive</option></select>
-      </div>
+    <div class="cc" style="margin:0; background:#ede9fe;">
+      <label>Total Active Tasks</label>
+      <div id="d-t" class="bf" style="font-size:32px;">0</div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-gray" onclick="closeModal('m-task')">CANCEL</button>
-      <button class="btn btn-gold" id="t-save-btn" onclick="saveTask()">SAVE TASK</button>
-    </div>
+  </div>
+  
+  <div class="cc" style="margin:0; background:#dcfce7; margin-bottom:16px;">
+    <label>Pending Withdrawals</label>
+    <div id="d-p" class="bf" style="font-size:32px; color:var(--red);">0</div>
+  </div>
+
+  <div class="cc" style="margin:0;">
+    <h3 class="bf" style="font-size:20px; margin-bottom:10px;">📢 BROADCAST ANNOUNCEMENT</h3>
+    <label>Announcement Content</label>
+    <textarea id="ann-input" rows="3" placeholder="Enter text for all users..."></textarea>
+    <button class="cb" onclick="sendAnn()" style="width:100%;">PUBLISH BROADCAST</button>
   </div>
 </div>
 
-<!-- REWARD MODAL -->
-<div class="modal-overlay" id="m-reward">
-  <div class="modal-box">
-    <div class="modal-header">
-      <h3>REWARD HERO</h3>
-      <button class="modal-close" onclick="closeModal('m-reward')">✕</button>
-    </div>
-    <div class="modal-body">
-      <input type="hidden" id="r-uid">
-      <p id="r-uname" style="font-weight:700;margin-bottom:14px;color:var(--gold)"></p>
-      <div class="form-group"><label>Coins to Add *</label><input type="number" id="r-amount" placeholder="100" min="1"></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-gray" onclick="closeModal('m-reward')">CANCEL</button>
-      <button class="btn btn-gold" onclick="rewardUser()">⚡ ADD COINS</button>
-    </div>
+<div id="p-tasks" class="panel">
+  <div class="cc" style="margin:0; margin-bottom:16px;">
+    <h3 class="bf" style="font-size:20px; margin-bottom:12px;">➕ ADD NEW MISSION</h3>
+    <label>Mission Name / Title</label>
+    <input type="text" id="t-name" placeholder="e.g. Follow Twitter Account">
+    <label>Reward Coins</label>
+    <input type="number" id="t-coins" placeholder="100">
+    <label>Mission Type / Category</label>
+    <input type="text" id="t-type" placeholder="Telegram, Twitter, Youtube">
+    <label>Mission URL / Link (Optional)</label>
+    <input type="url" id="t-link" placeholder="https://...">
+    <button class="cb" onclick="addTask()" style="width:100%;">CREATE MISSION</button>
   </div>
+
+  <div class="bf" style="font-size:20px; margin-left:4px; margin-bottom:8px;">📋 MANAGE ACTIVE TASKS</div>
+  <div id="list-tasks"></div>
 </div>
 
-<!-- ANNOUNCE MODAL -->
-<div class="modal-overlay" id="m-ann">
-  <div class="modal-box">
-    <div class="modal-header">
-      <h3 id="m-ann-title">POST ANNOUNCEMENT</h3>
-      <button class="modal-close" onclick="closeModal('m-ann')">✕</button>
-    </div>
-    <div class="modal-body">
-      <input type="hidden" id="a-id">
-      <div class="form-group"><label>Title *</label><input type="text" id="a-title" placeholder="Announcement title..."></div>
-      <div class="form-group"><label>Message *</label><textarea id="a-body" rows="4" placeholder="Write your message..."></textarea></div>
-      <div class="form-group"><label>Type</label>
-        <select id="a-type"><option value="info">Info</option><option value="event">Event</option><option value="alert">Alert</option></select>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-gray" onclick="closeModal('m-ann')">CANCEL</button>
-      <button class="btn btn-gold" onclick="saveAnn()">📢 PUBLISH</button>
-    </div>
-  </div>
+<div id="p-pays" class="panel">
+  <div class="bf" style="font-size:20px; margin-left:4px; margin-bottom:8px;">⏳ PENDING WITHDRAWALS</div>
+  <div id="list-pays-pending"></div>
+  
+  <div class="bf" style="font-size:20px; margin-left:4px; margin-top:16px; margin-bottom:8px;">✅ RECENT RESOLVED PAYOUTS</div>
+  <div id="list-pays-done"></div>
 </div>
 
-<!-- Firebase loaded FIRST as blocking scripts -->
+<div id="p-users" class="panel">
+  <div class="cc" style="margin:0; margin-bottom:12px;">
+    <label>Search User by ID or Name</label>
+    <input type="text" id="u-search" oninput="searchUser()" placeholder="Type ID or Name...">
+  </div>
+  <div id="list-users"></div>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
 <script>
-/* ════════════════════════════════════════════════
-   GLOBALS
-════════════════════════════════════════════════ */
-var PASS = "Admin2024";
-var db, FS; // FS = FieldValue shortcut
-var _tasks = [], _users = [], _payments = [], _anns = [];
-var _payFilter = 'all';
-var _listeners = {}; // store unsubscribe functions
-var _toastT;
-
-/* ════════════════════════════════════════════════
-   FIREBASE — init immediately (scripts already loaded)
-════════════════════════════════════════════════ */
+/* ── FIREBASE CONFIGURATION ── */
 const firebaseConfig = {
-
   apiKey: "AIzaSyCv8HcH4-6VdYgCcdOZlR-MTL4HbL-Is7Y",
-
   authDomain: "gen-lang-client-0231834349.firebaseapp.com",
-
   databaseURL: "https://gen-lang-client-0231834349-default-rtdb.firebaseio.com",
-
   projectId: "gen-lang-client-0231834349",
-
   storageBucket: "gen-lang-client-0231834349.firebasestorage.app",
-
   messagingSenderId: "148097864437",
-
   appId: "1:148097864437:web:a9d15cd9b249d8cbb52bbc"
-
 };
 
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+var db = firebase.firestore();
 
-
-} catch(e) { /* already initialized */ }
-
-db = firebase.firestore();
-FS = firebase.firestore.FieldValue;
-
-/* Firestore persistence — survive page refresh */
-/* persistence removed — causes offline errors in restricted environments */
-
-/* Force long-polling — fixes connection in restricted WebView environments */
-db.settings({ experimentalForceLongPolling: true, merge: true });
-
-/* ════════════════════════════════════════════════
-   DOM READY
-════════════════════════════════════════════════ */
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('gate-btn').onclick = checkPass;
-    document.getElementById('gate-input').onkeydown = function(e){ if(e.key==='Enter') checkPass(); };
-    document.querySelectorAll('.modal-overlay').forEach(function(el){
-        el.onclick = function(e){ if(e.target===el) el.classList.remove('open'); };
-    });
-});
-
-/* ════════════════════════════════════════════════
-   AUTH
-════════════════════════════════════════════════ */
-function checkPass() {
-    var v = document.getElementById('gate-input').value;
-    if (v === PASS) {
-        document.getElementById('gate').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
-        startListeners(); // attach ALL real-time listeners
-    } else {
-        document.getElementById('gate-error').innerText = '❌ Wrong password';
-        document.getElementById('gate-input').value = '';
-        setTimeout(function(){ document.getElementById('gate-error').innerText=''; }, 3000);
-    }
+/* ── APP INITIALIZATION ── */
+function init() {
+  showToast("🔄 CONNECTING TO LIVE DATABASE...");
+  listenData();
 }
 
-function doLogout() {
-    // Detach all listeners before logout
-    Object.keys(_listeners).forEach(function(k){ if(_listeners[k]) _listeners[k](); });
-    _listeners = {};
-    document.getElementById('gate').style.display = 'flex';
-    document.getElementById('app').style.display = 'none';
-    document.getElementById('gate-input').value = '';
+/* ── REALTIME DATABASE LISTENERS ── */
+function listenData() {
+  // 1. Users Counter & List
+  db.collection('users').onSnapshot(function(snap) {
+    document.getElementById('d-u').innerText = snap.size;
+    renderUsers(snap.docs.map(d => d.data()));
+  });
+
+  // 2. Tasks Management
+  db.collection('tasks').orderBy('createdAt', 'desc').onSnapshot(function(snap) {
+    document.getElementById('d-t').innerText = snap.size;
+    renderTasks(snap.docs.map(d => Object.assign({_id: d.id}, d.data())));
+  });
+
+  // 3. Withdrawals Management
+  db.collection('withdrawals').orderBy('createdAt', 'desc').onSnapshot(function(snap) {
+    var all = snap.docs.map(d => Object.assign({_id: d.id}, d.data()));
+    var pending = all.filter(w => w.status === 'pending');
+    var done = all.filter(w => w.status !== 'pending');
+    
+    document.getElementById('d-p').innerText = pending.length;
+    renderPayouts(pending, done);
+  });
 }
 
-/* ════════════════════════════════════════════════
-   REAL-TIME LISTENERS — all attached once at login
-   Each listener updates UI immediately on any change
-════════════════════════════════════════════════ */
-function startListeners() {
-    // 1. USERS — real-time
-    _listeners.users = db.collection('users').orderBy('coins','desc')
-        .onSnapshot(function(snap) {
-            _users = snap.docs.map(function(d){ return Object.assign({_id:d.id}, d.data()); });
-            renderUsers(_users);
-            // Update dashboard stats
-            var total = 0;
-            _users.forEach(function(u){ total += (u.coins||0); });
-            setText('s-users', _users.length);
-            setText('s-coins', total.toLocaleString());
-            setText('users-count', '(' + _users.length + ' heroes)');
-        }, function(err){ showToast('❌ Users: ' + err.message); });
-
-    // 2. TASKS — real-time
-    _listeners.tasks = db.collection('tasks').orderBy('createdAt','desc')
-        .onSnapshot(function(snap) {
-            _tasks = snap.docs.map(function(d){ return Object.assign({_id:d.id}, d.data()); });
-            renderTasks(_tasks);
-            var active = _tasks.filter(function(t){ return t.isActive !== false; }).length;
-            setText('s-tasks', active);
-            setText('tasks-count', '(' + _tasks.length + ' total)');
-        }, function(err){ showToast('❌ Tasks: ' + err.message); });
-
-    // 3. PAYMENTS — real-time (respects current filter)
-    attachPayListener();
-
-    // 4. PENDING count for dashboard
-    _listeners.pending = db.collection('withdrawals').where('status','==','pending')
-        .onSnapshot(function(snap){
-            setText('s-pending', snap.size);
-        });
-
-    // 5. ANNOUNCEMENTS — real-time
-    _listeners.anns = db.collection('announcements').orderBy('createdAt','desc')
-        .onSnapshot(function(snap) {
-            _anns = snap.docs.map(function(d){ return Object.assign({_id:d.id}, d.data()); });
-            renderAnns(_anns);
-        }, function(err){ showToast('❌ Announcements: ' + err.message); });
-
-    // Draw chart after short delay
-    setTimeout(drawChart, 400);
+/* ── UI TAB CONTROLLER ── */
+function go(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab-b').forEach(b => b.classList.remove('on'));
+  document.getElementById('p-' + id).classList.add('on');
+  document.getElementById('b-' + id).classList.add('on');
 }
 
-function attachPayListener() {
-    if (_listeners.payments) { _listeners.payments(); } // detach old
-    var q = (_payFilter === 'all')
-        ? db.collection('withdrawals').orderBy('createdAt','desc')
-        : db.collection('withdrawals').where('status','==',_payFilter).orderBy('createdAt','desc');
-    _listeners.payments = q.onSnapshot(function(snap) {
-        _payments = snap.docs.map(function(d){ return Object.assign({_id:d.id}, d.data()); });
-        renderPayments(_payments);
-    }, function(err){ showToast('❌ Payments: ' + err.message); });
+/* ── ANNOUNCEMENT CONTROLLER ── */
+function sendAnn() {
+  var txt = document.getElementById('ann-input').value.trim();
+  if(!txt) return showToast("❌ CANNOT SEND EMPTY BROADCAST!");
+  
+  showToast("⏳ PUBLISHING...");
+  db.collection('announcements').add({
+    title: txt,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(function() {
+    showToast("📢 BROADCAST PUBLISHED SUCCESSFULLY!");
+    document.getElementById('ann-input').value = '';
+  }).catch(e => showToast("❌ ERROR: " + e.message));
 }
 
-/* ════════════════════════════════════════════════
-   NAVIGATION
-════════════════════════════════════════════════ */
-function showPage(name) {
-    document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
-    document.querySelectorAll('.nav-link').forEach(function(n){ n.classList.remove('active'); });
-    document.getElementById('page-' + name).classList.add('active');
-    document.getElementById('nav-' + name).classList.add('active');
-    if (name === 'dashboard') setTimeout(drawChart, 200);
+/* ── TASK ACTIONS ── */
+function addTask() {
+  var name = document.getElementById('t-name').value.trim();
+  var coins = parseInt(document.getElementById('t-coins').value) || 0;
+  var type = document.getElementById('t-type').value.trim();
+  var link = document.getElementById('t-link').value.trim();
+
+  if(!name || !coins || !type) return showToast("❌ PLEASE FILL ALL MANDATORY FIELDS!");
+
+  showToast("⏳ CREATING TASK...");
+  db.collection('tasks').add({
+    name: name,
+    reward: coins,
+    type: type,
+    link: link || null,
+    isActive: true,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(function() {
+    showToast("✅ TASK SAVED TO LIVE DB!");
+    document.getElementById('t-name').value = '';
+    document.getElementById('t-coins').value = '';
+    document.getElementById('t-type').value = '';
+    document.getElementById('t-link').value = '';
+  }).catch(e => showToast("❌ SAVE FAILED: " + e.message));
 }
 
-/* ════════════════════════════════════════════════
-   MODALS
-════════════════════════════════════════════════ */
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function deleteTask(id) {
+  if(!confirm("ARE YOU SURE YOU WANT TO DELETE THIS MISSION?")) return;
+  showToast("⏳ DELETING...");
+  db.collection('tasks').doc(id).delete()
+    .then(() => showToast("🗑️ MISSION REMOVED!"))
+    .catch(e => showToast("❌ ERROR: " + e.message));
+}
 
-/* ════════════════════════════════════════════════
-   TOAST
-════════════════════════════════════════════════ */
+function renderTasks(arr) {
+  var el = document.getElementById('list-tasks');
+  if(!arr.length) { el.innerHTML = '<p style="padding:16px;text-align:center;font-weight:700;color:#666;">No active missions found.</p>'; return; }
+  
+  el.innerHTML = arr.map(t => `
+    <div class="card-item">
+      <div>
+        <div style="font-weight:900;text-transform:uppercase;">${esc(t.name)}</div>
+        <div style="font-size:11px;color:var(--blue);font-weight:700;">${esc(t.type)} • +${t.reward} 🪙</div>
+      </div>
+      <button class="cb" onclick="deleteTask('${t._id}')" style="background:var(--red);color:#fff;padding:4px 10px;font-size:11px;box-shadow:2px 2px 0 #000;">DELETE</button>
+    </div>
+  `).join('');
+}
+
+/* ── PAYOUT ACTIONS ── */
+function actionPay(id, status) {
+  if(!confirm(`MARK THIS TRANSACTION AS ${status.toUpperCase()}?`)) return;
+  showToast("⏳ UPDATING TRANSACTION STATE...");
+  db.collection('withdrawals').doc(id).update({ status: status })
+    .then(() => showToast(`⚡ REQUEST ${status.toUpperCase()} SUCCESSFULLY!`))
+    .catch(e => showToast("❌ ACTION FAILED: " + e.message));
+}
+
+function renderPayouts(pending, done) {
+  var pEl = document.getElementById('list-pays-pending');
+  var dEl = document.getElementById('list-pays-done');
+  
+  if(!pending.length) { pEl.innerHTML = '<p style="padding:12px;color:#777;font-weight:700;">🎉 No pending payout requests!</p>'; }
+  else {
+    pEl.innerHTML = pending.map(w => `
+      <div class="cc" style="margin:4px 0 10px 0;border-color:var(--red);">
+        <div style="display:flex;justify-content:between;align-items:center;margin-bottom:8px;font-weight:900;">
+          <span style="font-size:16px;color:var(--red); flex:1;">-${w.amount} 🪙 (${w.userName || 'Hero'})</span>
+          <span style="font-size:10px;color:#666;">ID: ${w.userId}</span>
+        </div>
+        <div style="font-family:monospace;font-size:12px;background:#eee;padding:6px;margin-bottom:10px;word-break:break-all;border:1px dashed #000;">${esc(w.usdcAddress)}</div>
+        <div class="grid-2">
+          <button class="cb" onclick="actionPay('${w._id}','approved')" style="background:var(--green);color:#fff;font-size:12px;padding:6px;">APPROVE</button>
+          <button class="cb" onclick="actionPay('${w._id}','rejected')" style="background:var(--red);color:#fff;font-size:12px;padding:6px;">REJECT</button>
+        </div>
+      </div>
+    `).join('');
+  }
+  
+  if(!done.length) { dEl.innerHTML = '<p style="padding:12px;color:#777;">No previous actions logged.</p>'; }
+  else {
+    dEl.innerHTML = done.slice(0, 15).map(w => {
+      var sCls = w.status === 'approved' ? 'bapp' : 'brej';
+      return `
+        <div class="card-item" style="opacity:0.85;">
+          <div>
+            <div style="font-weight:900;">-${w.amount} 🪙 • ${esc(w.userName)}</div>
+            <div style="font-size:10px;font-family:monospace;color:#666;max-width:220px;overflow:hidden;text-overflow:ellipsis;">${esc(w.usdcAddress)}</div>
+          </div>
+          <span class="${sCls}">${w.status.toUpperCase()}</span>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
+/* ── USERS CONTROLLER ── */
+function renderUsers(arr) {
+  var el = document.getElementById('list-users');
+  if(!arr.length) { el.innerHTML = '<p style="padding:16px;text-align:center;">Database is completely empty.</p>'; return; }
+  
+  el.innerHTML = arr.map(u => `
+    <div class="card-item user-row">
+      <div>
+        <div style="font-weight:900;" class="u-meta">${esc(u.name || 'Hero')}</div>
+        <div style="font-size:11px;color:#666;" class="u-meta">ID: ${u.id} • RefBy: ${u.refferBy || 'NONE'}</div>
+      </div>
+      <div style="text-align:right;font-weight:900;color:var(--green);font-size:14px;">${u.coins || 0} 🪙</div>
+    </div>
+  `).join('');
+}
+
+function searchUser() {
+  var q = document.getElementById('u-search').value.toLowerCase().trim();
+  document.querySelectorAll('#list-users .user-row').forEach(function(row) {
+    row.style.display = row.querySelector('.u-meta').innerText.toLowerCase().includes(q) ? 'flex' : 'none';
+  });
+}
+
+/* ── TOAST MESSAGES ── */
+var _toastT;
 function showToast(msg) {
-    var t = document.getElementById('toast');
-    t.innerText = msg; t.style.display = 'block';
-    clearTimeout(_toastT);
-    _toastT = setTimeout(function(){ t.style.display = 'none'; }, 3500);
+  var t = document.getElementById('toast');
+  if (!t) return;
+  t.innerText = msg; t.style.display = 'block';
+  clearTimeout(_toastT);
+  _toastT = setTimeout(function(){ t.style.display='none'; }, 3500);
 }
 
-function setText(id, val) {
-    var el = document.getElementById(id);
-    if (el) el.innerText = val;
-}
-
-/* ════════════════════════════════════════════════
-   CHART
-════════════════════════════════════════════════ */
-function drawChart() {
-    var canvas = document.getElementById('mychart');
-    if (!canvas) return;
-    var ctx = canvas.getContext('2d');
-    var W = canvas.parentElement.clientWidth - 40;
-    canvas.width = W; canvas.height = 220;
-    var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-    var data = [320,480,390,520,680,750,820,690,740,890,960,1100];
-    var max = Math.max.apply(null,data);
-    var pl=40,pr=16,pt=20,pb=36;
-    var cw=W-pl-pr, ch=220-pt-pb;
-    var bw=(cw/data.length)*0.6, gap=cw/data.length;
-    ctx.clearRect(0,0,W,220);
-    for(var g=0;g<=4;g++){
-        var gy=pt+ch-(ch*g/4);
-        ctx.strokeStyle='#2a2a3e';ctx.lineWidth=1;
-        ctx.beginPath();ctx.moveTo(pl,gy);ctx.lineTo(pl+cw,gy);ctx.stroke();
-    }
-    for(var i=0;i<data.length;i++){
-        var x=pl+gap*i+(gap-bw)/2;
-        var bh=(data[i]/max)*ch, y=pt+ch-bh;
-        var gr=ctx.createLinearGradient(0,y,0,y+bh);
-        gr.addColorStop(0,'#FFD700');gr.addColorStop(1,'#E63946');
-        ctx.fillStyle=gr; ctx.fillRect(x,y,bw,bh);
-        ctx.fillStyle='#FFD700';ctx.font='bold 9px Inter';ctx.textAlign='center';
-        ctx.fillText(data[i],x+bw/2,y-4);
-        ctx.fillStyle='#888';ctx.font='bold 9px Inter';
-        ctx.fillText(months[i],x+bw/2,pt+ch+20);
-    }
-}
-window.addEventListener('resize', function(){ if(document.getElementById('page-dashboard').classList.contains('active')) drawChart(); });
-
-/* ════════════════════════════════════════════════
-   TASKS CRUD
-════════════════════════════════════════════════ */
-function renderTasks(tasks) {
-    var tbody = document.getElementById('tbody-tasks');
-    if (!tbody) return;
-    if (!tasks.length) { tbody.innerHTML = '<tr><td colspan="7"><div class="empty-msg">No tasks yet.</div></td></tr>'; return; }
-    tbody.innerHTML = tasks.map(function(t,i){
-        var active = t.isActive !== false;
-        return '<tr>' +
-          '<td>' + (i+1) + '</td>' +
-          '<td style="font-weight:700;max-width:200px">' + esc(t.name||'') + '</td>' +
-          '<td>' + esc(t.type||'—') + '</td>' +
-          '<td><strong style="color:var(--gold)">' + (t.reward||0) + ' 🪙</strong></td>' +
-          '<td>' + (t.link ? '<a href="'+esc(t.link)+'" target="_blank" style="color:var(--blue);font-size:11px">OPEN ↗</a>' : '—') + '</td>' +
-          '<td><span class="badge ' + (active?'b-active':'b-inactive') + '">' + (active?'Active':'Inactive') + '</span></td>' +
-          '<td class="td-actions">' +
-            '<button class="btn btn-blue" onclick="_editTask(\''+t._id+'\')">✏️ Edit</button>' +
-            '<button class="btn btn-gray" onclick="_toggleTask(\''+t._id+'\','+active+')">' + (active?'⏸ Off':'▶ On') + '</button>' +
-            '<button class="btn btn-red" onclick="_delTask(\''+t._id+'\')">🗑️</button>' +
-          '</td></tr>';
-    }).join('');
-}
-
-function openTaskModal(data) {
-    document.getElementById('t-id').value = data ? data._id : '';
-    document.getElementById('t-name').value = data ? (data.name||'') : '';
-    document.getElementById('t-type').value = data ? (data.type||'YouTube') : 'YouTube';
-    document.getElementById('t-link').value = data ? (data.link||'') : '';
-    document.getElementById('t-reward').value = data ? (data.reward||'') : '';
-    document.getElementById('t-status').value = data ? String(data.isActive!==false) : 'true';
-    document.getElementById('m-task-title').innerText = data ? 'EDIT TASK' : 'ADD TASK';
-    openModal('m-task');
-}
-
-function _editTask(id) {
-    var t = _tasks.find(function(x){ return x._id===id; });
-    if (t) openTaskModal(t);
-}
-
-function saveTask() {
-    var id     = document.getElementById('t-id').value;
-    var name   = document.getElementById('t-name').value.trim();
-    var type   = document.getElementById('t-type').value;
-    var link   = document.getElementById('t-link').value.trim();
-    var reward = parseInt(document.getElementById('t-reward').value);
-    var active = document.getElementById('t-status').value === 'true';
-
-    if (!name)                   return showToast('❌ Task name is required!');
-    if (isNaN(reward)||reward<1) return showToast('❌ Coin reward must be at least 1!');
-
-    var btn = document.getElementById('t-save-btn');
-    btn.disabled = true; btn.innerText = 'SAVING...';
-
-    var payload = { name:name, type:type, link:link, reward:reward, isActive:active, updatedAt:FS.serverTimestamp() };
-
-    var resetBtn = function() { btn.disabled = false; btn.innerText = 'SAVE TASK'; };
-
-    /* timeout safety — if Firestore hangs, unlock button after 10s */
-    var safetyTimer = setTimeout(function() {
-        resetBtn();
-        showToast('⚠️ Slow connection — check Firebase Rules & internet');
-    }, 10000);
-
-    var prom = id
-        ? db.collection('tasks').doc(id).update(payload)
-        : (payload.createdAt = FS.serverTimestamp(), db.collection('tasks').add(payload));
-
-    prom.then(function(){
-        clearTimeout(safetyTimer);
-        showToast(id ? '✅ TASK UPDATED!' : '✅ TASK ADDED!');
-        closeModal('m-task');
-        resetBtn();
-    }).catch(function(e){
-        clearTimeout(safetyTimer);
-        resetBtn();
-        /* Show specific Firebase error messages in Bangla */
-        var msg = e.message || '';
-        if (msg.includes('permission') || msg.includes('PERMISSION_DENIED')) {
-            showToast('❌ PERMISSION DENIED — Fix Firestore Rules in Firebase Console');
-        } else if (msg.includes('offline') || msg.includes('UNAVAILABLE')) {
-            showToast('❌ OFFLINE — Check internet connection');
-        } else {
-            showToast('❌ ' + msg);
-        }
-        console.error('saveTask error:', e);
-    });
-}
-
-function _toggleTask(id, isActive) {
-    db.collection('tasks').doc(id).update({ isActive: !isActive, updatedAt: FS.serverTimestamp() })
-        .then(function(){ showToast(isActive ? '⏸ Task disabled' : '▶ Task enabled'); })
-        .catch(function(e){ showToast('❌ ' + e.message); });
-}
-
-function _delTask(id) {
-    if (!confirm('DELETE this task permanently?')) return;
-    db.collection('tasks').doc(id).delete()
-        .then(function(){ showToast('🗑️ Task deleted'); })
-        .catch(function(e){ showToast('❌ ' + e.message); });
-}
-
-/* ════════════════════════════════════════════════
-   USERS
-════════════════════════════════════════════════ */
-function renderUsers(users) {
-    var tbody = document.getElementById('tbody-users');
-    if (!tbody) return;
-    if (!users.length) { tbody.innerHTML='<tr><td colspan="8"><div class="empty-msg">No users yet.</div></td></tr>'; return; }
-    tbody.innerHTML = users.map(function(u,i){
-        var joined = u.joinedAt && u.joinedAt.toDate ? u.joinedAt.toDate().toLocaleDateString() : '—';
-        var banned = u.isBanned || false;
-        return '<tr>' +
-          '<td>' + (i+1) + '</td>' +
-          '<td style="font-weight:700">' + esc(u.name||'—') + '</td>' +
-          '<td style="font-size:11px;color:var(--dim)">' + esc(u._id||u.id||'—') + '</td>' +
-          '<td style="color:var(--gold);font-weight:700">' + (u.coins||0) + ' 🪙</td>' +
-          '<td>' + (u.tasksCompleted||0) + '</td>' +
-          '<td style="font-size:11px">' + joined + '</td>' +
-          '<td><span class="badge '+(banned?'b-banned':'b-active')+'">'+(banned?'Banned':'Active')+'</span></td>' +
-          '<td class="td-actions">' +
-            '<button class="btn btn-gold" onclick="_openReward(\''+esc(u._id||u.id||'')+'\',\''+esc(u.name||'Hero')+'\')">+ Coins</button>' +
-            '<button class="btn '+(banned?'btn-green':'btn-red')+'" onclick="_ban(\''+esc(u._id||u.id||'')+'\','+banned+')">'+(banned?'✅ Unban':'🚫 Ban')+'</button>' +
-            '<button class="btn btn-gray" onclick="_resetClaims(\''+esc(u._id||u.id||'')+'\')">🔄 Reset</button>' +
-          '</td></tr>';
-    }).join('');
-}
-
-function filterUsers() {
-    var q = document.getElementById('user-search').value.toLowerCase();
-    renderUsers(_users.filter(function(u){
-        return (u.name||'').toLowerCase().includes(q) || (u._id||'').toLowerCase().includes(q) || (u.id||'').toLowerCase().includes(q);
-    }));
-}
-
-function _openReward(uid, uname) {
-    document.getElementById('r-uid').value = uid;
-    document.getElementById('r-uname').innerText = 'Hero: ' + uname;
-    document.getElementById('r-amount').value = '';
-    openModal('m-reward');
-}
-
-function rewardUser() {
-    var uid = document.getElementById('r-uid').value;
-    var amt = parseInt(document.getElementById('r-amount').value);
-    if (!uid||isNaN(amt)||amt<1) return showToast('❌ Enter valid amount!');
-    db.collection('users').doc(uid).update({ coins: FS.increment(amt) })
-        .then(function(){ showToast('✅ +' + amt + ' COINS ADDED!'); closeModal('m-reward'); })
-        .catch(function(e){ showToast('❌ ' + e.message); });
-}
-
-function _ban(uid, isBanned) {
-    if (!confirm((isBanned?'UNBAN':'BAN') + ' this user?')) return;
-    db.collection('users').doc(uid).update({ isBanned: !isBanned })
-        .then(function(){ showToast('✅ Done!'); })
-        .catch(function(e){ showToast('❌ ' + e.message); });
-}
-
-function _resetClaims(uid) {
-    if (!confirm('Reset ALL task claims for this user?\nThey can redo all tasks.')) return;
-    showToast('⏳ Resetting...');
-    db.collection('user_claims').where('userId','==',uid).get()
-        .then(function(snap){
-            var batch = db.batch();
-            snap.docs.forEach(function(d){ batch.delete(d.ref); });
-            return batch.commit().then(function(){ showToast('✅ Reset! (' + snap.size + ' claims removed)'); });
-        }).catch(function(e){ showToast('❌ ' + e.message); });
-}
-
-/* ════════════════════════════════════════════════
-   PAYMENTS
-════════════════════════════════════════════════ */
-function setPayFilter(filter, btn) {
-    _payFilter = filter;
-    document.querySelectorAll('.filter-tab').forEach(function(t){ t.classList.remove('active'); });
-    btn.classList.add('active');
-    attachPayListener(); // reattach with new filter
-}
-
-function renderPayments(data) {
-    var tbody = document.getElementById('tbody-payments');
-    if (!tbody) return;
-    if (!data.length) { tbody.innerHTML='<tr><td colspan="7"><div class="empty-msg">No payments found.</div></td></tr>'; return; }
-    tbody.innerHTML = data.map(function(w,i){
-        var date = w.createdAt && w.createdAt.toDate ? w.createdAt.toDate().toLocaleString() : '—';
-        var pending = w.status === 'pending';
-        var bc = w.status==='approved'?'b-approved':w.status==='rejected'?'b-rejected':'b-pending';
-        return '<tr class="'+(pending?'pending-row':'')+'">' +
-          '<td>' + (i+1) + '</td>' +
-          '<td style="font-weight:700">' + esc(w.userName||w.userId||'—') + '</td>' +
-          '<td style="color:var(--gold);font-weight:700">' + (w.amount||0) + ' 🪙</td>' +
-          '<td style="font-size:11px;font-family:monospace;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(w.usdcAddress||'')+'">'+esc(w.usdcAddress||'—')+'</td>' +
-          '<td style="font-size:11px">' + date + '</td>' +
-          '<td><span class="badge ' + bc + '">' + esc(w.status) + '</span></td>' +
-          '<td class="td-actions">' + (pending
-            ? '<button class="btn btn-green" onclick="_pay(\''+w._id+'\',\''+esc(w.userId||'')+'\','+w.amount+',\'approved\')">✅ Approve</button>' +
-              '<button class="btn btn-red" onclick="_pay(\''+w._id+'\',\''+esc(w.userId||'')+'\','+w.amount+',\'rejected\')">❌ Reject</button>'
-            : '<span style="color:var(--dim);font-size:11px">Done</span>') +
-          '</td></tr>';
-    }).join('');
-}
-
-function _pay(wid, uid, amount, status) {
-    if (!confirm((status==='approved'?'APPROVE':'REJECT') + ' this payout of ' + amount + ' coins?')) return;
-    var batch = db.batch();
-    batch.update(db.collection('withdrawals').doc(wid), { status:status, processedAt:FS.serverTimestamp() });
-    if (status === 'rejected') {
-        batch.update(db.collection('users').doc(uid.toString()), {
-            coins: FS.increment(amount),
-            totalWithdrawals: FS.increment(-1)
-        });
-    }
-    batch.commit()
-        .then(function(){ showToast(status==='approved'?'✅ APPROVED!':'❌ REJECTED & REFUNDED!'); })
-        .catch(function(e){ showToast('❌ ' + e.message); });
-}
-
-/* ════════════════════════════════════════════════
-   ANNOUNCEMENTS
-════════════════════════════════════════════════ */
-function renderAnns(data) {
-    var el = document.getElementById('ann-list');
-    if (!el) return;
-    if (!data.length) { el.innerHTML = '<div class="empty-msg">No announcements yet.</div>'; return; }
-    el.innerHTML = data.map(function(a){
-        var date = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate().toLocaleString() : '—';
-        return '<div class="announce-card">' +
-          '<div style="flex:1;min-width:0">' +
-            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">' +
-              '<span class="badge b-'+(a.type||'info')+'">'+(a.type||'info')+'</span>' +
-              '<strong style="font-size:14px">' + esc(a.title||'') + '</strong>' +
-            '</div>' +
-            '<p style="font-size:13px;color:var(--text)">' + esc(a.body||'') + '</p>' +
-            '<p style="font-size:10px;color:var(--dim);margin-top:6px">' + date + '</p>' +
-          '</div>' +
-          '<div style="display:flex;gap:6px;flex-shrink:0">' +
-            '<button class="btn btn-blue" onclick="_editAnn(\''+a._id+'\')">✏️</button>' +
-            '<button class="btn btn-red" onclick="_delAnn(\''+a._id+'\')">🗑️</button>' +
-          '</div></div>';
-    }).join('');
-}
-
-function openAnnModal(data) {
-    document.getElementById('a-id').value = data ? data._id : '';
-    document.getElementById('a-title').value = data ? (data.title||'') : '';
-    document.getElementById('a-body').value = data ? (data.body||'') : '';
-    document.getElementById('a-type').value = data ? (data.type||'info') : 'info';
-    document.getElementById('m-ann-title').innerText = data ? 'EDIT ANNOUNCEMENT' : 'POST ANNOUNCEMENT';
-    openModal('m-ann');
-}
-
-function _editAnn(id) {
-    var a = _anns.find(function(x){ return x._id===id; });
-    if (a) openAnnModal(a);
-}
-
-function saveAnn() {
-    var id    = document.getElementById('a-id').value;
-    var title = document.getElementById('a-title').value.trim();
-    var body  = document.getElementById('a-body').value.trim();
-    var type  = document.getElementById('a-type').value;
-
-    if (!title) return showToast('❌ Title is required!');
-    if (!body)  return showToast('❌ Message is required!');
-
-    var pubBtn = document.querySelector('#m-ann .modal-footer .btn-gold');
-    if (pubBtn) { pubBtn.disabled = true; pubBtn.innerText = 'PUBLISHING...'; }
-    var resetAnnBtn = function() { if(pubBtn){ pubBtn.disabled=false; pubBtn.innerText='📢 PUBLISH'; } };
-
-    var safetyTimer = setTimeout(function() {
-        resetAnnBtn();
-        showToast('⚠️ Slow connection — check Firebase Rules & internet');
-    }, 10000);
-
-    var payload = { title:title, body:body, type:type, updatedAt:FS.serverTimestamp() };
-    var prom = id
-        ? db.collection('announcements').doc(id).update(payload)
-        : (payload.createdAt = FS.serverTimestamp(), db.collection('announcements').add(payload));
-
-    prom.then(function(){
-        clearTimeout(safetyTimer);
-        resetAnnBtn();
-        showToast(id ? '✅ UPDATED!' : '📢 PUBLISHED!');
-        closeModal('m-ann');
-    }).catch(function(e){
-        clearTimeout(safetyTimer);
-        resetAnnBtn();
-        var msg = e.message || '';
-        if (msg.includes('permission') || msg.includes('PERMISSION_DENIED')) {
-            showToast('❌ PERMISSION DENIED — Fix Firestore Rules in Firebase Console');
-        } else if (msg.includes('offline') || msg.includes('UNAVAILABLE')) {
-            showToast('❌ OFFLINE — Check internet connection');
-        } else {
-            showToast('❌ ' + msg);
-        }
-        console.error('saveAnn error:', e);
-    });
-}
-
-function _delAnn(id) {
-    if (!confirm('DELETE this announcement?')) return;
-    db.collection('announcements').doc(id).delete()
-        .then(function(){ showToast('🗑️ Deleted'); })
-        .catch(function(e){ showToast('❌ ' + e.message); });
-}
-
-/* ════════════════════════════════════════════════
-   HELPER
-════════════════════════════════════════════════ */
 function esc(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
+
+/* Run initial functions */
+init();
 </script>
 </body>
 </html>
